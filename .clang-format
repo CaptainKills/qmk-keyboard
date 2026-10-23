@@ -1,0 +1,11 @@
+---
+IndentWidth: 4
+ColumnLimit: 180
+DerivePointerAlignment: false
+PointerAlignment: Left
+SpaceAfterCStyleCast: true
+AllowShortLoopsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+AlignConsecutiveMacros: true
+IncludeBlocks: Regroup
+AlignAfterOpenBracket: BlockIndent
