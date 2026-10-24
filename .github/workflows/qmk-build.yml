@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           token: ${{ github.token }}
-          path: qmk_firmware/keyboards/ferris/keymaps/${{ inputs.keymap }}
+          path: qmk_firmware/keyboards/ferris/keymaps/custom-keyboard
           submodules: recursive
 
       - name: Install QMK CLI dependencies
@@ -40,12 +40,12 @@ jobs:
         run: |
           qmk config compile.parallel=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null)
           qmk config user.qmk_home=$GITHUB_WORKSPACE/qmk_firmware
-          qmk config user.keyboard=${{ inputs.keyboard }}
-          qmk config user.keymap=${{ inputs.keymap }}
+          qmk config user.keyboard=ferris/sweep
+          qmk config user.keymap=custom-keyboard
 
       - name: Build
         run: |
-          qmk compile -kb ${{ inputs.keyboard }} -km ${{ inputs.keymap }} -e DUMP_CI_METADATA=yes || touch .failed
+          qmk compile -e DUMP_CI_METADATA=yes || touch .failed
           # Generate the step summary markdown
           ./qmk_firmware/util/ci/generate_failure_markdown.sh > $GITHUB_STEP_SUMMARY || true
           # Truncate to a maximum of 1MB to deal with GitHub workflow limit
@@ -73,6 +73,6 @@ jobs:
   publish:
     name: Publish Firmware
     needs: build
-    if: success() && ((github.ref == 'refs/heads/main' && github.event_name == 'push') || github.event_name == 'workflow_dispatch')
+    if: success() && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/qmk-publish.yml
     secrets: inherit
