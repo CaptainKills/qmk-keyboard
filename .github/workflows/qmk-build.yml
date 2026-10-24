@@ -1,0 +1,78 @@
+name: Build Firmware
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Firmware
+    runs-on: ubuntu-latest
+    container: ghcr.io/qmk/qmk_cli:latest
+
+    steps:
+      - name: Checkout QMK Firmware
+        uses: actions/checkout@v6
+        with:
+          token: ${{ github.token }}
+          path: qmk_firmware
+          repository: qmk/qmk_firmware
+          ref: master
+          submodules: recursive
+
+      - name: Checkout Keymap
+        uses: actions/checkout@v6
+        with:
+          token: ${{ github.token }}
+          path: qmk_firmware/keyboards/ferris/keymaps/custom-keyboard
+          submodules: recursive
+
+      - name: Install QMK CLI dependencies
+        run: |
+          echo '$PATH'
+          echo $PATH | tr ':' '\n' | sed -e 's/^/ - /g'
+          pip install --break-system-packages -r qmk_firmware/requirements.txt 2>/dev/null || pip install -r qmk_firmware/requirements.txt
+
+      - name: Configure QMK CLI
+        run: |
+          qmk config compile.parallel=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null)
+          qmk config user.qmk_home=$GITHUB_WORKSPACE/qmk_firmware
+          qmk config user.keyboard=ferris/sweep
+          qmk config user.keymap=custom-keyboard
+
+      - name: Build
+        run: |
+          qmk compile -e DUMP_CI_METADATA=yes || touch .failed
+          # Generate the step summary markdown
+          ./qmk_firmware/util/ci/generate_failure_markdown.sh > $GITHUB_STEP_SUMMARY || true
+          # Truncate to a maximum of 1MB to deal with GitHub workflow limit
+          truncate --size='<960K' $GITHUB_STEP_SUMMARY || true
+          # Exit with failure if the compilation stage failed
+          [ ! -f .failed ] || exit 1
+
+      - name: Copy binaries
+        if: always() && !cancelled()
+        run: |
+          cp -v qmk_firmware/*.bin qmk_firmware/*.hex qmk_firmware/*.uf2 . 2>/dev/null || true
+          cp -v qmk_firmware/.build/*.bin qmk_firmware/.build/*.hex qmk_firmware/.build/*.uf2 . 2>/dev/null || true
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v7
+        if: always() && !cancelled()
+        continue-on-error: true
+        with:
+          name: Firmware
+          path: |
+            *.bin
+            *.hex
+            *.uf2
+
+  publish:
+    name: Publish Firmware
+    needs: build
+    if: success() && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/qmk-publish.yml
+    secrets: inherit

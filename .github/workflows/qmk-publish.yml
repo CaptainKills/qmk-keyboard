@@ -1,0 +1,48 @@
+name: Publish Firmware
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ github.token }}
+          fetch-tags: true
+
+      - name: Download binaries
+        if: always() && !cancelled()
+        uses: actions/download-artifact@v8
+        with:
+          name: Firmware
+
+      - name: Delete release
+        run: gh release delete latest --cleanup-tag || true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Generate Release
+        uses: softprops/action-gh-release@v3
+        if: always() && !cancelled()
+        with:
+          token: ${{ github.token }}
+          name: Latest QMK Firmware
+          tag_name: latest
+          fail_on_unmatched_files: false
+          draft: false
+          prerelease: false
+          files: |
+            *.hex
+            *.bin
+            *.uf2
+            **/*.hex
+            **/*.bin
+            **/*.uf2
