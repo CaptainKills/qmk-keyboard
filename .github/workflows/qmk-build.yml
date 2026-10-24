@@ -1,37 +1,8 @@
-name: Build Binaries
+name: Build Firmware
 
 on:
   push:
   pull_request:
-  workflow_dispatch:
-    inputs:
-      keyboard:
-        description: "Keyboard to build"
-        default: "ferris/sweep"
-        required: false
-        type: string
-      keymap:
-        description: "Keymap to build"
-        default: "danick"
-        required: false
-        type: string
-  workflow_call:
-    inputs:
-      keyboard:
-        description: "Keyboard to build"
-        default: "ferris/sweep"
-        required: false
-        type: string
-      keymap:
-        description: "Keymap to build"
-        default: "danick"
-        required: false
-        type: string
-      preparation_command:
-        description: "Command to execute before build"
-        default: ""
-        required: false
-        type: string
 
 permissions:
   contents: write
@@ -71,11 +42,6 @@ jobs:
           qmk config user.qmk_home=$GITHUB_WORKSPACE/qmk_firmware
           qmk config user.keyboard=${{ inputs.keyboard }}
           qmk config user.keymap=${{ inputs.keymap }}
-
-      - name: Preparation command
-        if: inputs.preparation_command != ''
-        run: |
-          ${{ inputs.preparation_command }}
 
       - name: Build
         run: |
