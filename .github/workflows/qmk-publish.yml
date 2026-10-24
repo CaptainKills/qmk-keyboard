@@ -1,13 +1,8 @@
-name: Build Binaries
+name: Publish Binaries
 
 on:
   workflow_call:
-    inputs:
-      release_name:
-        description: "allow setting the release name"
-        default: "latest"
-        required: false
-        type: string
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,6 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          token: ${{ github.token }}
           fetch-tags: true
 
       - name: Download binaries
@@ -30,7 +26,7 @@ jobs:
           name: Firmware
 
       - name: Delete release
-        run: gh release delete ${{ inputs.release_name || 'latest' }} --cleanup-tag || true
+        run: gh release delete latest --cleanup-tag || true
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -40,11 +36,14 @@ jobs:
         with:
           token: ${{ github.token }}
           name: Latest QMK Firmware
-          tag_name: ${{ inputs.release_name || 'latest' }}
+          tag_name: latest
           fail_on_unmatched_files: false
           draft: false
           prerelease: false
           files: |
+            *.hex
+            *.bin
+            *.uf2
             **/*.hex
             **/*.bin
             **/*.uf2
