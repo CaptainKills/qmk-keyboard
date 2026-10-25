@@ -1,122 +1,144 @@
-A usable default keymap for the Ferris keyboard
-===============================================
+# 34-Key Ferris Sweep Keymap
 
-Keymaps in general are quite personal, so it is difficult to come up with a default that will suit every user.
+A clean, ergonomic keymap for the 34-key Ferris Sweep split keyboard, optimized for **Neovim**,
+**Linux Desktop Environment workspace switching**, and **Tmux window navigation**.
 
-This keymap makes heavy use of keys behaving differently when tapped and held, so that all the keys one may need remain accessible despite the low number of thumb keys.
+---
 
-It comes with a number of layers to give access to most of the keys one may need on a keyboard. It is not meant to be the best possible keymap, but rather a good base on which to build a keymap that works for you.
+## Layer Architecture Overview
 
-This is not the only way to make 34 keys a comfortable typing experience, but it is one way to do so. If you don't already know of a better way, this may be as good a starting point as any :)
+The keymap defines four layers in `enum layer_t` within `keymap.c`:
+- **`L_KBD`**: Base Alpha Layer
+- **`L_NAV`**: Navigation, Movement & Number Layer
+- **`L_SYM`**: Symbol Layer *(reserved for future implementation)*
+- **`L_FUN`**: Function Layer *(reserved for future implementation)*
 
-Note that this keymap was built from the perspective that it is OK to take a steep learning curve if it results in a keymap that is easier to use in the long run. This means that it may take more effort to learn this keymap than some alternatives. "Easy to use" was assessed against the workflow of the author, so your mileage may vary on some of the details.
+Thumb cluster keys on `L_KBD` act as layer switchers (via `LT()` layer-tap behaviour), allowing
+instant access to navigation and future symbol/function layers while maintaining standard typing
+keys on tap.
 
-What do all these layers do?
-----------------------------
+---
 
-### Layer 0: Base layer
+## Keyboard Physical Layout
 
-![Layer 0](https://i.imgur.com/HjNHUPL.png)
+The Ferris Sweep features a split 3x5 column-staggered layout with 2 thumb keys per hand centred
+towards the inner side of each half (under the index and inner-index columns):
 
-On tapping the keys, our base layer is qwerty with space on the right homing thumb and backspace on the left homing thumb.
+```
+Left Hand                                                Right Hand
+[  0  ] [  1  ] [  2  ] [  3  ] [  4  ]       [  4  ] [  3  ] [  2  ] [  1  ] [  0  ]
+(Pinky) (Ring)  (Mid)   (Index) (Inner)       (Inner) (Index) (Mid)   (Ring)  (Pinky)
+[     ] [     ] [     ] [     ] [     ]       [     ] [     ] [     ] [     ] [     ]
+[     ] [     ] [     ] [     ] [     ]       [     ] [     ] [     ] [     ] [     ]
+[     ] [     ] [     ] [     ] [     ]       [     ] [     ] [     ] [     ] [     ]
+                        [ T1  ] [ T2  ]       [ T3  ] [ T4  ]
+                        (Outer) (Inner)       (Inner) (Outer)
+```
 
-In this layer, the non-homing-thumb positions have 0 and 1. I recommend modifying this to some frequently accessed shortcut such as copy/paste, previous/next tab or anything that makes most sense in your own workflow. O and 1 are place-holders and make it easy to troubleshoot that all keys are working properly before soldering in the switches.
-The reason I recommend convenience shortcuts instead of more commonly used keys like tab or meta is that unhoming of the thumbs was a frequent source of typos for me when I used more than one thumb key frequently in the context of typing.
+---
 
-Despite being missing on this layer, "meta", "tab", "esc" and such are accessible from any other layer: see Layer 7.
+## Layer 0: Base Alpha Layer (`L_KBD`)
 
-The behaviour of some keys differ when held:
-* Both homing pinkies behave as shift.
-* Both bottom-row ring fingers behave as ctrl.
-* Both bottom-row middle fingers behave as alt.
+The base layer uses standard **QWERTY** alphas combined with **Home Row Mods (HRM)** and centred
+thumb keys.
 
-* The homing left ring finger gives access to the Function keys layer
-* The homing right ring finger gives access to the Numbers layer
-* The homing left middle finger gives access to the Mouse layer
-* The homing right middle finger gives access to the Navigation layer
-* The homing left index finger gives access to the Right symbols layer
-* The homing right index finger gives access to the Left symbols layer
-* The homing right thumb gives access to the Always accessible layer
+```
+Left Hand                                                Right Hand
+[ KC_Q  ] [ KC_W  ] [ KC_E  ] [ KC_R  ] [ KC_T  ]       [ KC_Y  ] [ KC_U  ] [ KC_I  ] [ KC_O  ] [ KC_P  ]
+[ MOD_A ] [ MOD_S ] [ MOD_D ] [ MOD_F ] [ KC_G  ]       [ KC_H  ] [ MOD_J ] [ MOD_K ] [ MOD_L ] [MOD_SCLN]
+[ KC_Z  ] [ KC_X  ] [ KC_C  ] [ KC_V  ] [ KC_B  ]       [ KC_N  ] [ KC_M  ] [KC_COMM] [KC_DOT ] [KC_SLSH]
+                              [NAV_ESC] [KC_SPC ]       [KC_ENT ] [KC_BSPC]
+                              (Outer)   (Inner)         (Inner)   (Outer)
+```
 
-### Layer 1: Mouse
+### Mod-Tap Definitions (`keymap.c`)
 
-![Layer 1](https://i.imgur.com/0fvTuB9.png)
+Holding any home row key applies the modifier; tapping sends the primary character:
 
-Layer 1 is a mouse layer: it can be used one-handed or two-handed. The most common way to use it is two handed, with left and right click on the homerow of the left hand and directions on the homerow of the right hand.
-Scrolling is available on the right hand with mid finger up and down for vertical scroll and index and ring finger down for horizontal scroll.
-On the right hand, left click and right click are also available with index and ring finger up to allow one handed operation. This can be particularly handy when enabling the mouse layer permanently (no need to hold the left middle finger), which can be done from Layer 7.
 
-Note that thanks to the transparency, shift, ctrl and alt are all accessible on the left hand while operating the mouse.
+| Define | Keycode Definition | Tap Key | Hold Modifier |
+| :--- | :--- | :--- | :--- |
+| **`MOD_A`** | `MT(MOD_LGUI, KC_A)` | `a` | `LGUI` (Super / Windows) |
+| **`MOD_S`** | `MT(MOD_LALT, KC_S)` | `s` | `LALT` (Left Alt) |
+| **`MOD_D`** | `MT(MOD_LSFT, KC_D)` | `d` | `LSFT` (Left Shift) |
+| **`MOD_F`** | `MT(MOD_LCTL, KC_F)` | `f` | `LCTL` (Left Control) |
+| **`MOD_J`** | `MT(MOD_RCTL, KC_J)` | `j` | `RCTL` (Right Control) |
+| **`MOD_K`** | `MT(MOD_RSFT, KC_K)` | `k` | `RSFT` (Right Shift) |
+| **`MOD_L`** | `MT(MOD_RALT, KC_L)` | `l` | `RALT` (Right Alt) |
+| **`MOD_SCLN`** | `MT(MOD_RGUI, KC_SEMICOLON)` | `;` | `RGUI` (Right GUI) |
 
-### Layer 2: Navigation
+### Layer-Tap & Thumb Cluster (`keymap.c`)
 
-![Layer 2](https://i.imgur.com/ZquQJRq.png)
+- **`NAV_ESC`** (`LT(L_NAV, KC_ESC)`):
+  - **Tap**: `KC_ESC` (drops to Normal mode in Neovim).
+  - **Hold**: Switches to **`L_NAV`** (Navigation, Movement & Number Layer).
+- **`KC_SPC`**: Space key (home resting position), planned to serve as layer switch for `L_SYM`
+  (Symbol Layer).
+- **`KC_ENT`**: Enter key (home resting position), planned to serve as layer switch for `L_FUN`
+  (Function Layer).
+- **`KC_BSPC`**: Backspace key.
 
-The navigation layer somewhat mirrors the mouse layer. It is accessed by holding the right middle finger and gives access to arrow keys on the left homerow. Page up and down, Home and End mirror the vertical scrolling and horizontal scrolling on the mouse layer.
+---
 
-On the right hand, in addition to ctrl and alt which are available through transparency, ctrl + alt, ctrl + alt + shift and meta are accessible on the homerow to enable common shortcuts in some window managers. This part is quite workflow dependent, so make sure to adapt it to your own workflow as appropriate.
+## Layer 1: Navigation, Movement & Number Layer (`L_NAV`)
 
-### Layer 3: Right symbols
+Activated by **holding the Outer Left Thumb (`NAV_ESC`)**.
 
-![Layer 3](https://i.imgur.com/9tLAUqG.png)
+```
+Left Hand                                                Right Hand
+[ KC_1  ] [ KC_2  ] [ KC_3  ] [ KC_4  ] [ KC_5  ]       [ KC_6  ] [ KC_7  ] [ KC_8  ] [ KC_9  ] [ KC_0  ]
+[KC_TRNS] [KC_TRNS] [KC_TRNS] [KC_TRNS] [ KC_NO ]       [KC_LEFT] [KC_DOWN] [ KC_UP ] [KC_RGHT] [ KC_NO ]
+[ KC_NO ] [ KC_NO ] [ KC_NO ] [ KC_NO ] [ KC_NO ]       [ KC_NO ] [ KC_NO ] [ KC_NO ] [ KC_NO ] [ KC_NO ]
+                              [KC_TRNS] [ KC_NO ]       [OSM(MOD_LCTL)] [OSM(MOD_LALT)]
+                              (Held)                    (Tmux Windows)  (DE Workspaces)
+```
 
-When holding down the left index, one may access about half of the symbols. The pinkies store `^` and `$` symbols that represent begin and end in vim. The left homerow hosts `*` and `&`, symbols which are related in the way that they represent some form of indirection in programming languages such as rust. On the right hand, most symbols used when navigating the command line are stored together, organized by columns of related symbols. 
+### Features
 
-### Layer 4: Left symbols
+#### 1. Top Number Row
 
-![Layer 4](https://i.imgur.com/CkjUSW6.png)
+- Numbers `KC_1` through `KC_5` on the left hand, and `KC_6` through `KC_0` on the right hand.
+- Hold `NAV_ESC` and tap any digit to input numbers without requiring a separate numeric keypad.
 
-When holding down the right index, one may access the other symbols. On the left hand, most of the different brackets are laid out. The most frequent ones (round brackets and curly brackets) get a spot on the homerow. The rest of the layer hosts the remaining symbols that are easier to access here than on any other layers.
+#### 2. Neovim `HJKL` Navigation
 
-### Layer 5: Function keys
+- Mapped directly to the right hand home row:
+  - `H` $\rightarrow$ Left Arrow (`KC_LEFT`)
+  - `J` $\rightarrow$ Down Arrow (`KC_DOWN`)
+  - `K` $\rightarrow$ Up Arrow (`KC_UP`)
+  - `L` $\rightarrow$ Right Arrow (`KC_RGHT`)
 
-![Layer 5](https://i.imgur.com/fWgVqc4.png)
+#### 3. One-Shot Modifiers for Workspaces & Tmux (No Holding Required)
 
-By holding down the left ring finger, one may access the function keys, roughly in a numpad layout.
-This means that alt+F4 is easy to type, with F4 being on the homerow.
-There is a shortcut for ctrl+alt on the left hand to enable convenient switching between virtual terminals on Linux.
+- **Desktop Environment Workspaces (`Alt + Num`)**:
+  - Hold `NAV_ESC` $\rightarrow$ tap **Outer Right Thumb** (`OSM(MOD_LALT)`) $\rightarrow$ tap
+    number (`1` ... `0`).
+  - The modifier is armed with a single tap, applies to the number, and unarms automatically.
+- **Tmux Windows (`Ctrl + Num`)**:
+  - Hold `NAV_ESC` $\rightarrow$ tap **Inner Right Thumb** (`OSM(MOD_LCTL)`) $\rightarrow$ tap
+    number (`1` ... `0`).
+  - Instantly switches Tmux window without needing 3-finger chording.
 
-### Layer 6: Numbers
+#### 4. Modifier Chording (`KC_TRNS`)
 
-![Layer 6](https://i.imgur.com/S8gq9Kj.png)
+- The left home row mods (`MOD_A`, `MOD_S`, `MOD_D`, `MOD_F`) fall through from `L_KBD` via
+  `KC_TRNS`, enabling seamless two-hand combinations:
+  - `Shift + HJKL`: Hold `MOD_D` (Shift) + press arrows for text selection.
+  - `Ctrl + HJKL`: Hold `MOD_F` (Ctrl) + press arrows for split/window navigation in Vim or Tmux.
+  - `Alt + HJKL`: Hold `MOD_S` (Alt) + press arrows for word-by-word jumping.
 
-The number layer is accessed by holding the right ring finger. It hosts the numbers and some duplicated symbols that are commonly accessed next to numbers, such as mathematical operators.
-The number are layed out similarly to a numpad, but with the middle row and the homerow swapped so that the most used numbers: 0, 1, 2 and 3 are all available in homing positions. 
+#### 5. Ergonomic Safety Rails (`KC_NO`)
 
-### Layer 7: Always accessible
+- All unused positions (bottom row alphas and inner columns) are mapped to `KC_NO` (No-Operation).
+- Accidental slips or brushes do not send stray characters or trigger destructive commands in
+  Neovim.
 
-![Layer 7](https://i.imgur.com/twqBeBb.png)
+---
 
-Layer 7 is accessed by holding the right homing thumb down. Because this position is left transparent from every other layer, this layer is always accessible.
-It gives access to some essential keys that would typically be accessed on a thumb cluster or pinkies, such as meta, enter, tab, esc and delete.
+## Building the Firmware
 
-As the layer hosting esc, we duplicated some symbols here to allow for fast navigation in vim. For instance, esc, :, w, q can be done in a single roll.
+To compile this keymap using the QMK CLI:
 
-Where is the keymap.c?
-----------------------
-
-The keymap.c file is not published to the repository. It is generated from `keymap.json` by the build system.
-
-This avoids duplicating information and allow users to edit their keymap from the qmk configurator web interface.
-
-How do I edit and update the keymap?
-------------------------------------
-
-The `keymap.json` file is generated from the qmk configurator interface and formatted for better readability in the context of the Ferris keyboard.
-
-To edit it, you may:
-* Edit it directly from a text editor.
-* Edit it from the qmk configurator.
-
-If you decide to use the latter workflow, here are the steps to follow:
-
-* From the qmk configurator, hit the "import QMK keymap json file" button (it has a drawing with an up arrow on it).
-* Browse to the location of your keymap (for example, `<your qmk repo>/keyboards/ferris/keymaps/default/keymap.json`)
-* Perform any modification to the keymap in the web UI
-* Export the keymap to your downloads folder, by hitting the "Export QMK keymap json file" button (it has a drawing with a down arrow on it)
-* Override your original keymap with the output of formatting the exported keymap by running a command such as this one from the root of your qmk repo:
-  ```
-  ./keyboards/handwired/ferris/keymaps/json2crab.py --input <Your download directory>/default.json > ./keyboards/handwired/ferris/keymaps/default/keymap.json
-  ```
-  Note that you may first need to make json2crab executable by using `chmod +x` on it.
-  Also note that you may then want to remove the exported keymap from your dowload directory.
+```bash
+qmk compile -kb ferris/sweep -km <name>
+```

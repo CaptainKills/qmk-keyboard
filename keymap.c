@@ -11,13 +11,14 @@
 #define MOD_SCLN MT(MOD_RGUI, KC_SEMICOLON)
 
 // Layer-Tap
-#define LAY_ESC  LT(L_KBD, KC_ESC)
+#define LAY_ESC  LT(L_NAV, KC_ESC)
 #define LAY_SPC  LT(L_KBD, KC_SPACE)
 #define LAY_ENT  LT(L_KBD, KC_ENTER)
 #define LAY_BSPC LT(L_KBD, KC_BACKSPACE)
 
 enum layer_t {
     L_KBD, // Alpha Layer
+    L_NAV, // Navigation Layer
     L_SYM, // Symbol Layer
     L_FUN, // Function Layer
 };
@@ -28,6 +29,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       MOD_A , MOD_S , MOD_D , MOD_F   , KC_G    ,     KC_H    , MOD_J    , MOD_K   , MOD_L  , MOD_SCLN,
       KC_Z  , KC_X  , KC_C  , KC_V    , KC_B    ,     KC_N    , KC_M     , KC_COMM , KC_DOT , KC_SLSH ,
                               LAY_ESC , LAY_SPC ,     LAY_ENT , LAY_BSPC
+),
+
+[L_NAV] = LAYOUT_split_3x5_2(
+      KC_1    , KC_2    , KC_3    , KC_4    , KC_5  ,     KC_6          , KC_7          , KC_8  , KC_9    , KC_0 ,
+      KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS , KC_NO ,     KC_LEFT       , KC_DOWN       , KC_UP , KC_RGHT , KC_NO,
+      KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO ,     KC_NO         , KC_NO         , KC_NO , KC_NO   , KC_NO,
+                                    KC_TRNS , KC_NO ,     OSM(MOD_LCTL) , OSM(MOD_LALT)
 ),
 
 [L_SYM] = LAYOUT_split_3x5_2(
