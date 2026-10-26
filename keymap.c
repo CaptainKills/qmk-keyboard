@@ -1,3 +1,4 @@
+#include "keymap_us.h"
 #include QMK_KEYBOARD_H
 
 // Mod-Tap
@@ -12,7 +13,7 @@
 
 // Layer-Tap
 #define LAY_ESC  LT(L_NAV, KC_ESC)
-#define LAY_SPC  LT(L_KBD, KC_SPACE)
+#define LAY_SPC  LT(L_SYM, KC_SPACE)
 #define LAY_ENT  LT(L_KBD, KC_ENTER)
 #define LAY_BSPC LT(L_KBD, KC_BACKSPACE)
 
@@ -39,10 +40,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [L_SYM] = LAYOUT_split_3x5_2(
-      KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS ,     KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS,
-      KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS ,     KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS,
-      KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS ,     KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS,
-                                    KC_TRNS , KC_TRNS ,     KC_TRNS , KC_TRNS
+      KC_EXLM , KC_AT   , KC_LCBR , KC_RCBR , KC_PIPE ,     KC_BSLS , KC_PLUS , KC_MINS , KC_ASTR , KC_SLSH,
+      KC_HASH , KC_DLR  , KC_LPRN , KC_RPRN , KC_TILD ,     KC_UNDS , KC_COLN , KC_EQL  , KC_DQUO , KC_QUOT,
+      KC_PERC , KC_CIRC , KC_LBRC , KC_RBRC , KC_GRV  ,     KC_SCLN , KC_LT   , KC_GT   , KC_QUES , KC_AMPR,
+                                    KC_NO   , KC_TRNS ,     KC_ENT  , KC_BSPC
 ),
 
 [L_FUN] = LAYOUT_split_3x5_2(
