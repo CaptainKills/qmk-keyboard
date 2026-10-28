@@ -1,4 +1,3 @@
-#include "keymap_us.h"
 #include QMK_KEYBOARD_H
 
 // Mod-Tap
@@ -33,10 +32,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [L_NAV] = LAYOUT_split_3x5_2(
-      KC_1    , KC_2    , KC_3    , KC_4    , KC_5  ,     KC_6          , KC_7          , KC_8  , KC_9    , KC_0 ,
-      KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS , KC_NO ,     KC_LEFT       , KC_DOWN       , KC_UP , KC_RGHT , KC_NO,
-      KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO ,     KC_NO         , KC_NO         , KC_NO , KC_NO   , KC_NO,
-                                    KC_TRNS , KC_NO ,     OSM(MOD_LCTL) , OSM(MOD_LALT)
+      KC_1    , KC_2    , KC_3    , KC_4    , KC_5  ,     KC_6       , KC_7          , KC_8  , KC_9    , KC_0 ,
+      KC_TRNS , KC_TRNS , KC_TRNS , KC_TRNS , KC_NO ,     KC_LEFT    , KC_DOWN       , KC_UP , KC_RGHT , KC_NO,
+      KC_NO   , KC_NO   , KC_NO   , KC_NO   , KC_NO ,     KC_NO      , KC_NO         , KC_NO , KC_NO   , KC_NO,
+                                    KC_TRNS , KC_NO ,     LCTL(KC_B) , OSM(MOD_LALT)
 ),
 
 [L_SYM] = LAYOUT_split_3x5_2(
