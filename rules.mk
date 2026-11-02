@@ -1,3 +1,4 @@
+SPLIT_KEYBOARD = yes
 LTO_ENABLE = yes
 
 CONSOLE_ENABLE = no
