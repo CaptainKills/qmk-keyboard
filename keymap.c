@@ -1,14 +1,14 @@
 #include QMK_KEYBOARD_H
 
 // Mod-Tap
-#define MOD_A    MT(MOD_LGUI, KC_A)
-#define MOD_S    MT(MOD_LALT, KC_S)
+#define MOD_A    MT(MOD_LALT, KC_A)
+#define MOD_S    MT(MOD_LGUI, KC_S)
 #define MOD_D    MT(MOD_LSFT, KC_D)
 #define MOD_F    MT(MOD_LCTL, KC_F)
 #define MOD_J    MT(MOD_RCTL, KC_J)
 #define MOD_K    MT(MOD_RSFT, KC_K)
-#define MOD_L    MT(MOD_RALT, KC_L)
-#define MOD_SCLN MT(MOD_RGUI, KC_SEMICOLON)
+#define MOD_L    MT(MOD_RGUI, KC_L)
+#define MOD_SCLN MT(MOD_RALT, KC_SEMICOLON)
 
 // Layer-Tap
 #define LAY_ESC  LT(L_NAV, KC_ESC)
